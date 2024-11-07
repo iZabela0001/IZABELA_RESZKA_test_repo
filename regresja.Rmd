@@ -1,0 +1,57 @@
+---
+title: "Regresja Prosta"
+date: "`r Sys.Date()`"
+output:
+  rmdformats::downcute:
+    self_contained: true
+    thumbnails: true
+    lightbox: true
+    gallery: false
+    highlight: tango
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(fig.width=9, fig.height=6)
+library(rmdformats)
+library(kableExtra)
+```
+
+# *Regresja prosta*
+
+Opisuje ona zależność między zmienną zależną x a zmienną niezależną y. Analizujemy związek pomiędzy jedną zmienną niezależną (objaśniającą) a jedną zmienną zależną (objaśnianą). W modelu regresji prostej przewidujemy wartości zmiennej zależnej na podstawie jednej zmiennej niezależnej. Wyraża się wzorem $$ y= \beta_0 + \beta_1 x + \epsilon$$, gdzie
+
+-   $\beta_0$ wartość początkowa (wyraz wolny), odpowiadająca wartości $y$ przy $x=0$,
+-   $\beta_1$ to współczynnik regresji dla zmiennej $x$, który określa, jak bardzo $y$ zmienia się przy jednostkowej zmianie $x$,
+-   $\epsilon$ to składnik losowy (błąd, odchylenie od przewidywanej linii regresji).
+
+## **Interpretacja danych**
+
+```{r zapoznanie_danych, include=TRUE}
+dane <- mtcars
+#head(dane)
+#str(dane)
+#any(is.na(dane))
+```
+
+Wykorzystamy dane ***mtcars*** do regresji prostej. Składają się one z 32 obserwacji, 11 kolumn. Typem wszystkich danych jest typ ***numeric.*** Kolumny **`vs`** oraz **`am`** są kodowane w sposób zero-jedynkowy, zatem możemy je traktować jako zmienne kategoryczne.
+
+## **Tworzenie modelu** {style="color: darkred"}
+
+Funkcja, która dopasowuje model regresji liniowej do danych w R to `lm`.
+
+1.  Zbadamy zależność między spalaniem a objetością silnika.
+
+```{r pierwszy_model, include=TRUE, results='asis', eval = TRUE}
+spal_sil <- lm(dane$mpg~dane$disp, data=dane)
+# podsumowanie 
+pods <- summary(spal_sil)
+
+coefficients_table <- pods$coefficients
+
+# Tworzenie tabeli z wynikami regresji z użyciem kable i kableExtra
+print(tabela <- kable(round(coefficients_table,5), caption = "Tabela wyników regresji") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed")))
+```
+
+Parametr $\beta_0$ (intercept) interpretujemy jako wartość oczekiwaną zmiennej objaśnianej w przypadku, gdy zmienna objaśniająca jest równa 0. W naszym przypadku ta interpretacja jest raczej mało sensowna ponieważ mówi o tym, że gdyby samochód miał silnik o pojemności 0 cu.in. (cale sześcienne) to przejechałby 29.6 mil na galonie. Parametr $\beta_1$ (disp) mówi nam ile średnio wzrośnie wartość zmiennej objaśnianej przy wzroście zmiennej objaśniającej o jedną jednostkę. W naszym przypadku, gdy samochód ma pojemność większo o 1 cu.in. to przejeżdża na galonie o średnio 0.04 mili mniej.
+
